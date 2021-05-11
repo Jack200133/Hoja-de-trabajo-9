@@ -3,6 +3,6 @@ public class Main {
         Modelo md = new Modelo();
 
         md.cual();
-        //md.datos()
+        md.datos();
     }
 }

@@ -31,4 +31,11 @@ public class Modelo {
 
        datos = mf.getMAP(res);
    }
+
+   public void datos(){
+       // falta agregar que busque un valor dentro del arbol RBT
+        // falta agregar la implementacion de Association
+        // Aqui falta agragar los datos al diccionario
+       // Falta trducir el documento
+   }
 }

@@ -75,4 +75,9 @@ class HashMapa<K,V> implements Map,Mapas<K,V> {
     public void add(K key, V Valor) {
         Mapita.put(key,Valor);
     }
+
+    @Override
+    public boolean contains(Object value) {
+        return Mapita.containsValue(value);
+    }
 }

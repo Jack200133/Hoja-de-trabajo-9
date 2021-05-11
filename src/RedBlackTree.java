@@ -93,4 +93,12 @@ public class RedBlackTree<Key extends Comparable<Key>, Value> implements Mapas<K
         return null;
     }
 
+
+    // falta agregar que busque un valor dentro del arbol RBT
+    @Override
+    public boolean contains(Key key) {
+        return false;
+    }
+
+
 }

@@ -1,5 +1,4 @@
 
-import java.util.Map;
 
 
 public class MapFactory {
@@ -7,9 +6,9 @@ public class MapFactory {
     public Mapas getMAP(String entry) {
         return switch (entry) {
             //regresa un Hashing map|
-            case "HM" -> new RBT("");
+            case "HM" -> new HashMapa();
             //regresa un Red Black TreeMap
-            default -> new RBT("");
+            default -> new RedBlackTree();
 
         };
     }

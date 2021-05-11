@@ -1,4 +1,4 @@
-public interface Mapas<E> {
+public interface Mapas<K,V> {
 
-    void add(E item);
+    void add(K key,V Valor);
 }

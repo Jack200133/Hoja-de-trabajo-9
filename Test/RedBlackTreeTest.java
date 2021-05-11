@@ -11,7 +11,8 @@ class RedBlackTreeTest {
         rbt.add("segun",2);
         rbt.add("tercer",3);
         rbt.add("cuarto",4);
-        assert (rbt.get("cuarto").equals(4));
+        System.out.println(rbt.contains("primero"));
+        //assert (rbt.contains("primero"));
 
     }
 

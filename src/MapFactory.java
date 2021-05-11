@@ -4,12 +4,12 @@ import java.util.Map;
 
 public class MapFactory {
 
-    public Map getMAP(String entry) {
+    public Mapas getMAP(String entry) {
         return switch (entry) {
-            //regresa un Red Black TreeMap
-            case "RBT" -> new RBT();
             //regresa un Hashing map|
-            default -> new Hash();
+            case "HM" -> new RBT("");
+            //regresa un Red Black TreeMap
+            default -> new RBT("");
 
         };
     }

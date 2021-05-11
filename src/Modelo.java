@@ -3,7 +3,7 @@ import java.util.Map;
 
 public class Modelo {
     Scanner scan;
-    Map datos;
+    Mapas datos;
     MapFactory mf;
 
     public Modelo() {

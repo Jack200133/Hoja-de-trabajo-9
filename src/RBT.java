@@ -1,4 +1,4 @@
-public class RBT<E extends Comparable<E>> {
+public class RBT<E extends Comparable<E>> implements Mapas<E>{
     private RBN<E> current;
     private RBN<E> parent;
     private RBN<E> grand;
@@ -15,7 +15,6 @@ public class RBT<E extends Comparable<E>> {
     /* Black - 1  RED - 0 */
     static final int BLACK = 1;
     static final int RED   = 0;
-
     /* Constructor */
     public RBT(E negInf)
     {
@@ -34,7 +33,7 @@ public class RBT<E extends Comparable<E>> {
         header.right = nullNode;
     }
     /* Function to insert item */
-    public void insert(E item )
+    public void add(E item)
     {
         current = parent = grand = header;
         nullNode.element = item;
@@ -42,7 +41,7 @@ public class RBT<E extends Comparable<E>> {
         {
             great = grand;
             grand = parent;
-            parent = current;
+            parent = current; //regresa un Red Black TreeMap
             current = item.compareTo(current.element)<1/* < current.element*/ ? current.left : current.right;
             // Check if two red children and fix if so            
             if (current.left.color == RED && current.right.color == RED)
@@ -71,7 +70,7 @@ public class RBT<E extends Comparable<E>> {
             // Have to rotate
             grand.color = RED;
             if (item.compareTo(grand.element) /*< grand.element*/ != item.compareTo(parent.element)/* < parent.element*/)
-                parent = rotate( item, grand );  // Start dbl rotate
+                parent = rotate(item, grand );  // Start dbl rotate
             current = rotate(item, great );
             current.color = BLACK;
         }
@@ -81,9 +80,9 @@ public class RBT<E extends Comparable<E>> {
     private RBN rotate(E item, RBN parent)
     {
         if(item.compareTo((E) parent.element) <1 /*parent.element*/)
-            return parent.left = item < parent.left.element ? rotateWithLeftChild(parent.left) : rotateWithRightChild(parent.left) ;
+            return parent.left = item.compareTo((E) parent.left.element) <1 /*parent.left.element*/ ? rotateWithLeftChild(parent.left) : rotateWithRightChild(parent.left) ;
         else
-            return parent.right = item < parent.right.element ? rotateWithLeftChild(parent.right) : rotateWithRightChild(parent.right);
+            return parent.right = item.compareTo((E)parent.right.element) <1 /*parent.right.element*/ ? rotateWithLeftChild(parent.right) : rotateWithRightChild(parent.right);
     }
     /* Rotate binary tree node with left child */
     private RBN rotateWithLeftChild(RBN k2)
@@ -193,4 +192,5 @@ public class RBT<E extends Comparable<E>> {
             System.out.print(r.element +""+c+" ");
         }
     }
+
 }

@@ -60,6 +60,7 @@ public class Reader {
                 res = new StringBuilder();
                 for (String s : temp) {
                    String[] oracion = s.split(" ");
+                   System.out.println("\nOracion original: " + data + "\n");
                    for(String i: oracion){
                        if(map.contains(i.toLowerCase())){
                            res.append(" ");
@@ -72,7 +73,7 @@ public class Reader {
                 }
             }
             myReader.close();
-            System.out.println(res.toString());
+            System.out.println("\nTraduccion al espanol: " + res.toString() + "\n");
         }catch (Exception e) {
             System.out.println("Archivo no encontrado");
             e.printStackTrace();

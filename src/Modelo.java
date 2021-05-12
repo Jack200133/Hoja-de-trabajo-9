@@ -20,7 +20,9 @@ public class Modelo {
     }
 
     public void cual(){
-       System.out.println("Ingrese que tipo de Map se implementara:");
+        System.out.println("\n=================== TRADUCTOR FELIZ :) ===================\n");
+
+       System.out.println("Ingrese que tipo de Mapeo (Balanced Search Tree) se implementara:");
        System.out.println("1. HashMap");
        System.out.println("2. Splay Tree");
        System.out.println("3. Red Black Tree");
@@ -58,13 +60,13 @@ public class Modelo {
        */
 
         rd.dataToTree(datos);
-        System.out.println(datos.get("abacuses"));
-        rd.sentenceReader(datos);
 
 
        /**
         * Se realiza la lectura de la oracion, la cual sera traducida posteriorme
         */
+
+        rd.sentenceReader(datos);
 
 
    }

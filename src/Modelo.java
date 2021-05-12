@@ -25,6 +25,7 @@ public class Modelo {
        System.out.println("Ingrese que tipo de Map se implementara:");
        System.out.println("1. HashMap");
        System.out.println("2. Splay Tree");
+       System.out.println("3. Red Black Tree");
 
        int op = scan.nextInt();
 
@@ -34,7 +35,9 @@ public class Modelo {
        }
        else if(op ==2){
            res = "SPLT";
-       }else{
+       }else if(op==3){
+           res = "RBT";
+       } else {
            res = "";
        }
 

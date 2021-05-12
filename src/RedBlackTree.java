@@ -5,463 +5,568 @@
  * Algoritmos y estructuras de datos
  * Seccion 10
  * Hoja de trabajo 9
+ * Codigo utilizado de: https://algs4.cs.princeton.edu/33balanced/RedBlackBST.java.html
  */
 
-// Red Black Tree implementation in Java
-// Author: Algorithm Tutor
-// Tutorial URL: https://algorithmtutor.com/Data-Structures/Tree/Red-Black-Trees/
+import java.util.NoSuchElementException;
 
-// data structure that represents a node in the tree
-class Node<K,V> {
-    K data; // holds the key
-    V value;// guarda el valor
-    Node parent; // pointer to the parent
-    Node left; // pointer to left child
-    Node right; // pointer to right child
-    int color; // 1 . Red, 0 . Black
-}
+/**
+ *  The {@code BST} class represents an ordered symbol table of generic
+ *  key-value pairs.
+ *  It supports the usual <em>put</em>, <em>get</em>, <em>contains</em>,
+ *  <em>delete</em>, <em>size</em>, and <em>is-empty</em> methods.
+ *  It also provides ordered methods for finding the <em>minimum</em>,
+ *  <em>maximum</em>, <em>floor</em>, and <em>ceiling</em>.
+ *  It also provides a <em>keys</em> method for iterating over all of the keys.
+ *  A symbol table implements the <em>associative array</em> abstraction:
+ *  when associating a value with a key that is already in the symbol table,
+ *  the convention is to replace the old value with the new value.
+ *  Unlike {@link java.util.Map}, this class uses the convention that
+ *  values cannot be {@code null}—setting the
+ *  value associated with a key to {@code null} is equivalent to deleting the key
+ *  from the symbol table.
+ *  <p>
+ *  It requires that
+ *  the key type implements the {@code Comparable} interface and calls the
+ *  {@code compareTo()} and method to compare two keys. It does not call either
+ *  {@code equals()} or {@code hashCode()}.
+ *  <p>
+ *  This implementation uses a <em>left-leaning red-black BST</em>. 
+ *  The <em>put</em>, <em>get</em>, <em>contains</em>, <em>remove</em>,
+ *  <em>minimum</em>, <em>maximum</em>, <em>ceiling</em>, <em>floor</em>,
+ *  <em>rank</em>, and <em>select</em> operations each take
+ *  &Theta;(log <em>n</em>) time in the worst case, where <em>n</em> is the
+ *  number of key-value pairs in the symbol table.
+ *  The <em>size</em>, and <em>is-empty</em> operations take &Theta;(1) time.
+ *  The <em>keys</em> methods take
+ *  <em>O</em>(log <em>n</em> + <em>m</em>) time, where <em>m</em> is
+ *  the number of keys returned by the iterator.
+ *  Construction takes &Theta;(1) time.
+ *  <p>
+ *  For alternative implementations of the symbol table API, see {@link ST},
+ *  {@link BinarySearchST}, {@link SequentialSearchST}, {@link BST},
+ *  {@link SeparateChainingHashST}, {@link LinearProbingHashST}, and
+ *  {@link AVLTreeST}.
+ *  For additional documentation, see
+ *  <a href="https://algs4.cs.princeton.edu/33balanced">Section 3.3</a> of
+ *  <i>Algorithms, 4th Edition</i> by Robert Sedgewick and Kevin Wayne.
+ *
+ *  @author Robert Sedgewick
+ *  @author Kevin Wayne
+ */
 
+public class RedBlackTree<Key extends Comparable<Key>, Value> implements Mapas<Key,Value> {
 
-// class RedBlackTree implements the operations in Red Black Tree
-public class RedBlackTree<Key extends  Comparable<Key>,Value> implements Mapas<Key,Value>{
-    private Node root;
-    private Node TNULL;
+    private static final boolean RED   = true;
+    private static final boolean BLACK = false;
 
-    private void preOrderHelper(Node node) {
-        if (node != TNULL) {
-            System.out.print(node.data + " ");
-            preOrderHelper(node.left);
-            preOrderHelper(node.right);
+    private Node root;     // root of the BST
+
+    // BST helper node data type
+    private class Node {
+        private Key key;           // key
+        private Value val;         // associated data
+        private Node left, right;  // links to left and right subtrees
+        private boolean color;     // color of parent link
+        private int size;          // subtree count
+
+        public Node(Key key, Value val, boolean color, int size) {
+            this.key = key;
+            this.val = val;
+            this.color = color;
+            this.size = size;
         }
     }
 
-    private void inOrderHelper(Node node) {
-        if (node != TNULL) {
-            inOrderHelper(node.left);
-            System.out.print(node.data + " ");
-            inOrderHelper(node.right);
-        }
-    }
-
-    private void postOrderHelper(Node node) {
-        if (node != TNULL) {
-            postOrderHelper(node.left);
-            postOrderHelper(node.right);
-            System.out.print(node.data + " ");
-        }
-    }
-
-    private Node searchTreeHelper(Node node, Key key) {
-        if (node == TNULL || key == node.data) {
-            return node;
-        }
-
-        if (key.compareTo((Key) node.data) < 1) {
-            return searchTreeHelper(node.left, key);
-        }
-        return searchTreeHelper(node.right, key);
-    }
-
-    // fix the rb tree modified by the delete operation
-    private void fixDelete(Node x) {
-        Node s;
-        while (x != root && x.color == 0) {
-            if (x == x.parent.left) {
-                s = x.parent.right;
-                if (s.color == 1) {
-                    // case 3.1
-                    s.color = 0;
-                    x.parent.color = 1;
-                    leftRotate(x.parent);
-                    s = x.parent.right;
-                }
-
-                if (s.left.color == 0 && s.right.color == 0) {
-                    // case 3.2
-                    s.color = 1;
-                    x = x.parent;
-                } else {
-                    if (s.right.color == 0) {
-                        // case 3.3
-                        s.left.color = 0;
-                        s.color = 1;
-                        rightRotate(s);
-                        s = x.parent.right;
-                    }
-
-                    // case 3.4
-                    s.color = x.parent.color;
-                    x.parent.color = 0;
-                    s.right.color = 0;
-                    leftRotate(x.parent);
-                    x = root;
-                }
-            } else {
-                s = x.parent.left;
-                if (s.color == 1) {
-                    // case 3.1
-                    s.color = 0;
-                    x.parent.color = 1;
-                    rightRotate(x.parent);
-                    s = x.parent.left;
-                }
-
-                if (s.right.color == 0) {
-                    // case 3.2
-                    s.color = 1;
-                    x = x.parent;
-                } else {
-                    if (s.left.color == 0) {
-                        // case 3.3
-                        s.right.color = 0;
-                        s.color = 1;
-                        leftRotate(s);
-                        s = x.parent.left;
-                    }
-
-                    // case 3.4
-                    s.color = x.parent.color;
-                    x.parent.color = 0;
-                    s.left.color = 0;
-                    rightRotate(x.parent);
-                    x = root;
-                }
-            }
-        }
-        x.color = 0;
-    }
-
-
-    private void rbTransplant(Node u, Node v){
-        if (u.parent == null) {
-            root = v;
-        } else if (u == u.parent.left){
-            u.parent.left = v;
-        } else {
-            u.parent.right = v;
-        }
-        v.parent = u.parent;
-    }
-
-    private void deleteNodeHelper(Node node, Key key) {
-        // find the node containing key
-        Node z = TNULL;
-        Node x, y;
-        while (node != TNULL){
-            if (node.data == key) {
-                z = node;
-            }
-
-            if (((Key)node.data).compareTo(key) <= 0) {
-                node = node.right;
-            } else {
-                node = node.left;
-            }
-        }
-
-        if (z == TNULL) {
-            System.out.println("Couldn't find key in the tree");
-            return;
-        }
-
-        y = z;
-        int yOriginalColor = y.color;
-        if (z.left == TNULL) {
-            x = z.right;
-            rbTransplant(z, z.right);
-        } else if (z.right == TNULL) {
-            x = z.left;
-            rbTransplant(z, z.left);
-        } else {
-            y = minimum(z.right);
-            yOriginalColor = y.color;
-            x = y.right;
-            if (y.parent == z) {
-                x.parent = y;
-            } else {
-                rbTransplant(y, y.right);
-                y.right = z.right;
-                y.right.parent = y;
-            }
-
-            rbTransplant(z, y);
-            y.left = z.left;
-            y.left.parent = y;
-            y.color = z.color;
-        }
-        if (yOriginalColor == 0){
-            fixDelete(x);
-        }
-    }
-
-    // fix the red-black tree
-    private void fixInsert(Node k){
-        Node u;
-        while (k.parent.color == 1) {
-            if (k.parent == k.parent.parent.right) {
-                u = k.parent.parent.left; // uncle
-                if (u.color == 1) {
-                    // case 3.1
-                    u.color = 0;
-                    k.parent.color = 0;
-                    k.parent.parent.color = 1;
-                    k = k.parent.parent;
-                } else {
-                    if (k == k.parent.left) {
-                        // case 3.2.2
-                        k = k.parent;
-                        rightRotate(k);
-                    }
-                    // case 3.2.1
-                    k.parent.color = 0;
-                    k.parent.parent.color = 1;
-                    leftRotate(k.parent.parent);
-                }
-            } else {
-                u = k.parent.parent.right; // uncle
-
-                if (u.color == 1) {
-                    // mirror case 3.1
-                    u.color = 0;
-                    k.parent.color = 0;
-                    k.parent.parent.color = 1;
-                    k = k.parent.parent;
-                } else {
-                    if (k == k.parent.right) {
-                        // mirror case 3.2.2
-                        k = k.parent;
-                        leftRotate(k);
-                    }
-                    // mirror case 3.2.1
-                    k.parent.color = 0;
-                    k.parent.parent.color = 1;
-                    rightRotate(k.parent.parent);
-                }
-            }
-            if (k == root) {
-                break;
-            }
-        }
-        root.color = 0;
-    }
-
-    private void printHelper(Node root, String indent, boolean last) {
-        // print the tree structure on the screen
-        if (root != TNULL) {
-            System.out.print(indent);
-            if (last) {
-                System.out.print("R----");
-                indent += "     ";
-            } else {
-                System.out.print("L----");
-                indent += "|    ";
-            }
-
-            String sColor = root.color == 1?"RED":"BLACK";
-            System.out.println(root.data + "(" + sColor + ")");
-            printHelper(root.left, indent, false);
-            printHelper(root.right, indent, true);
-        }
-    }
-
+    /**
+     * Initializes an empty symbol table.
+     */
     public RedBlackTree() {
-        TNULL = new Node();
-        TNULL.color = 0;
-        TNULL.left = null;
-        TNULL.right = null;
-        root = TNULL;
     }
 
-    // Pre-Order traversal
-    // Node.Left Subtree.Right Subtree
-    public void preorder() {
-        preOrderHelper(this.root);
+   /***************************************************************************
+    *  Node helper methods.
+    ***************************************************************************/
+    // is node x red; false if x is null ?
+    private boolean isRed(Node x) {
+        if (x == null) return false;
+        return x.color == RED;
     }
 
-    // In-Order traversal
-    // Left Subtree . Node . Right Subtree
-    public void inorder() {
-        inOrderHelper(this.root);
+    // number of node in subtree rooted at x; 0 if x is null
+    private int size(Node x) {
+        if (x == null) return 0;
+        return x.size;
+    } 
+
+
+    /**
+     * Returns the number of key-value pairs in this symbol table.
+     * @return the number of key-value pairs in this symbol table
+     */
+    public int size() {
+        return size(root);
     }
 
-    // Post-Order traversal
-    // Left Subtree . Right Subtree . Node
-    public void postorder() {
-        postOrderHelper(this.root);
+   /**
+     * Is this symbol table empty?
+     * @return {@code true} if this symbol table is empty and {@code false} otherwise
+     */
+    public boolean isEmpty() {
+        return root == null;
     }
 
-    // search the tree for the key k
-    // and return the corresponding node
-    public Node searchTree(Key k) {
-        return searchTreeHelper(this.root, k);
+
+   /***************************************************************************
+    *  Standard BST search.
+    ***************************************************************************/
+
+    /**
+     * Returns the value associated with the given key.
+     * @param key the key
+     * @return the value associated with the given key if the key is in the symbol table
+     *     and {@code null} if the key is not in the symbol table
+     * @throws IllegalArgumentException if {@code key} is {@code null}
+     */
+    public Value get(Key key) {
+        if (key == null) throw new IllegalArgumentException("argument to get() is null");
+        return get(root, key);
     }
 
-    // find the node with the minimum key
-    public Node minimum(Node node) {
-        while (node.left != TNULL) {
-            node = node.left;
+    // value associated with the given key in subtree rooted at x; null if no such key
+    private Value get(Node x, Key key) {
+        while (x != null) {
+            int cmp = key.compareTo(x.key);
+            if      (cmp < 0) x = x.left;
+            else if (cmp > 0) x = x.right;
+            else              return x.val;
         }
-        return node;
+        return null;
     }
 
-    // find the node with the maximum key
-    public Node maximum(Node node) {
-        while (node.right != TNULL) {
-            node = node.right;
-        }
-        return node;
+    /**
+     * Does this symbol table contain the given key?
+     * @param key the key
+     * @return {@code true} if this symbol table contains {@code key} and
+     *     {@code false} otherwise
+     * @throws IllegalArgumentException if {@code key} is {@code null}
+     */
+    public boolean contains(Key key) {
+        return get(key) != null;
     }
 
-    // find the successor of a given node
-    public Node successor(Node x) {
-        // if the right subtree is not null,
-        // the successor is the leftmost node in the
-        // right subtree
-        if (x.right != TNULL) {
-            return minimum(x.right);
+   /***************************************************************************
+    *  Red-black tree insertion.
+    ***************************************************************************/
+
+    /**
+     * Inserts the specified key-value pair into the symbol table, overwriting the old 
+     * value with the new value if the symbol table already contains the specified key.
+     * Deletes the specified key (and its associated value) from this symbol table
+     * if the specified value is {@code null}.
+     *
+     * @param key the key
+     * @param val the value
+     * @throws IllegalArgumentException if {@code key} is {@code null}
+     */
+    public void put(Key key, Value val) {
+        if (key == null) throw new IllegalArgumentException("first argument to put() is null");
+        if (val == null) {
+            delete(key);
+            return;
         }
 
-        // else it is the lowest ancestor of x whose
-        // left child is also an ancestor of x.
-        Node y = x.parent;
-        while (y != TNULL && x == y.right) {
-            x = y;
-            y = y.parent;
-        }
-        return y;
+        root = put(root, key, val);
+        root.color = BLACK;
+        // assert check();
     }
 
-    // find the predecessor of a given node
-    public Node predecessor(Node x) {
-        // if the left subtree is not null,
-        // the predecessor is the rightmost node in the
-        // left subtree
-        if (x.left != TNULL) {
-            return maximum(x.left);
-        }
+    // insert the key-value pair in the subtree rooted at h
+    private Node put(Node h, Key key, Value val) { 
+        if (h == null) return new Node(key, val, RED, 1);
 
-        Node y = x.parent;
-        while (y != TNULL && x == y.left) {
-            x = y;
-            y = y.parent;
-        }
+        int cmp = key.compareTo(h.key);
+        if      (cmp < 0) h.left  = put(h.left,  key, val); 
+        else if (cmp > 0) h.right = put(h.right, key, val); 
+        else              h.val   = val;
 
-        return y;
+        // fix-up any right-leaning links
+        if (isRed(h.right) && !isRed(h.left))      h = rotateLeft(h);
+        if (isRed(h.left)  &&  isRed(h.left.left)) h = rotateRight(h);
+        if (isRed(h.left)  &&  isRed(h.right))     flipColors(h);
+        h.size = size(h.left) + size(h.right) + 1;
+
+        return h;
     }
 
-    // rotate left at node x
-    public void leftRotate(Node x) {
-        Node y = x.right;
-        x.right = y.left;
-        if (y.left != TNULL) {
-            y.left.parent = x;
-        }
-        y.parent = x.parent;
-        if (x.parent == null) {
-            this.root = y;
-        } else if (x == x.parent.left) {
-            x.parent.left = y;
-        } else {
-            x.parent.right = y;
-        }
-        y.left = x;
-        x.parent = y;
+   /***************************************************************************
+    *  Red-black tree deletion.
+    ***************************************************************************/
+
+    /**
+     * Removes the smallest key and associated value from the symbol table.
+     * @throws NoSuchElementException if the symbol table is empty
+     */
+    public void deleteMin() {
+        if (isEmpty()) throw new NoSuchElementException("BST underflow");
+
+        // if both children of root are black, set root to red
+        if (!isRed(root.left) && !isRed(root.right))
+            root.color = RED;
+
+        root = deleteMin(root);
+        if (!isEmpty()) root.color = BLACK;
+        // assert check();
     }
 
-    // rotate right at node x
-    public void rightRotate(Node x) {
-        Node y = x.left;
-        x.left = y.right;
-        if (y.right != TNULL) {
-            y.right.parent = x;
-        }
-        y.parent = x.parent;
-        if (x.parent == null) {
-            this.root = y;
-        } else if (x == x.parent.right) {
-            x.parent.right = y;
-        } else {
-            x.parent.left = y;
-        }
-        y.right = x;
-        x.parent = y;
+    // delete the key-value pair with the minimum key rooted at h
+    private Node deleteMin(Node h) { 
+        if (h.left == null)
+            return null;
+
+        if (!isRed(h.left) && !isRed(h.left.left))
+            h = moveRedLeft(h);
+
+        h.left = deleteMin(h.left);
+        return balance(h);
     }
 
-    // insert the key to the tree in its appropriate position
-    // and fix the tree
-    public void add(Key key,Value value) {
-        // Ordinary Binary Search Insertion
-        Node node = new Node();
-        node.parent = null;
-        node.data = key;
-        node.value = value;
-        node.left = TNULL;
-        node.right = TNULL;
-        node.color = 1; // new node must be red
 
-        Node y = null;
-        Node x = this.root;
+    /**
+     * Removes the largest key and associated value from the symbol table.
+     * @throws NoSuchElementException if the symbol table is empty
+     */
+    public void deleteMax() {
+        if (isEmpty()) throw new NoSuchElementException("BST underflow");
 
-        while (x != TNULL) {
-            y = x;
-            if (((Key)node.data).compareTo((Key) x.data) < 1) {
-                x = x.left;
-            } else {
-                x = x.right;
+        // if both children of root are black, set root to red
+        if (!isRed(root.left) && !isRed(root.right))
+            root.color = RED;
+
+        root = deleteMax(root);
+        if (!isEmpty()) root.color = BLACK;
+        // assert check();
+    }
+
+    // delete the key-value pair with the maximum key rooted at h
+    private Node deleteMax(Node h) { 
+        if (isRed(h.left))
+            h = rotateRight(h);
+
+        if (h.right == null)
+            return null;
+
+        if (!isRed(h.right) && !isRed(h.right.left))
+            h = moveRedRight(h);
+
+        h.right = deleteMax(h.right);
+
+        return balance(h);
+    }
+
+    /**
+     * Removes the specified key and its associated value from this symbol table     
+     * (if the key is in this symbol table).    
+     *
+     * @param  key the key
+     * @throws IllegalArgumentException if {@code key} is {@code null}
+     */
+    public void delete(Key key) { 
+        if (key == null) throw new IllegalArgumentException("argument to delete() is null");
+        if (!contains(key)) return;
+
+        // if both children of root are black, set root to red
+        if (!isRed(root.left) && !isRed(root.right))
+            root.color = RED;
+
+        root = delete(root, key);
+        if (!isEmpty()) root.color = BLACK;
+        // assert check();
+    }
+
+    // delete the key-value pair with the given key rooted at h
+    private Node delete(Node h, Key key) { 
+        // assert get(h, key) != null;
+
+        if (key.compareTo(h.key) < 0)  {
+            if (!isRed(h.left) && !isRed(h.left.left))
+                h = moveRedLeft(h);
+            h.left = delete(h.left, key);
+        }
+        else {
+            if (isRed(h.left))
+                h = rotateRight(h);
+            if (key.compareTo(h.key) == 0 && (h.right == null))
+                return null;
+            if (!isRed(h.right) && !isRed(h.right.left))
+                h = moveRedRight(h);
+            if (key.compareTo(h.key) == 0) {
+                Node x = min(h.right);
+                h.key = x.key;
+                h.val = x.val;
+                // h.val = get(h.right, min(h.right).key);
+                // h.key = min(h.right).key;
+                h.right = deleteMin(h.right);
             }
+            else h.right = delete(h.right, key);
         }
+        return balance(h);
+    }
 
-        // y is parent of x
-        node.parent = y;
-        if (y == null) {
-            root = node;
-        } else if (((Key)node.data).compareTo((Key) y.data) < 1) {
-            y.left = node;
-        } else {
-            y.right = node;
+   /***************************************************************************
+    *  Red-black tree helper functions.
+    ***************************************************************************/
+
+    // make a left-leaning link lean to the right
+    private Node rotateRight(Node h) {
+        assert (h != null) && isRed(h.left);
+        // assert (h != null) && isRed(h.left) &&  !isRed(h.right);  // for insertion only
+        Node x = h.left;
+        h.left = x.right;
+        x.right = h;
+        x.color = x.right.color;
+        x.right.color = RED;
+        x.size = h.size;
+        h.size = size(h.left) + size(h.right) + 1;
+        return x;
+    }
+
+    // make a right-leaning link lean to the left
+    private Node rotateLeft(Node h) {
+        assert (h != null) && isRed(h.right);
+        // assert (h != null) && isRed(h.right) && !isRed(h.left);  // for insertion only
+        Node x = h.right;
+        h.right = x.left;
+        x.left = h;
+        x.color = x.left.color;
+        x.left.color = RED;
+        x.size = h.size;
+        h.size = size(h.left) + size(h.right) + 1;
+        return x;
+    }
+
+    // flip the colors of a node and its two children
+    private void flipColors(Node h) {
+        // h must have opposite color of its two children
+        // assert (h != null) && (h.left != null) && (h.right != null);
+        // assert (!isRed(h) &&  isRed(h.left) &&  isRed(h.right))
+        //    || (isRed(h)  && !isRed(h.left) && !isRed(h.right));
+        h.color = !h.color;
+        h.left.color = !h.left.color;
+        h.right.color = !h.right.color;
+    }
+
+    // Assuming that h is red and both h.left and h.left.left
+    // are black, make h.left or one of its children red.
+    private Node moveRedLeft(Node h) {
+        // assert (h != null);
+        // assert isRed(h) && !isRed(h.left) && !isRed(h.left.left);
+
+        flipColors(h);
+        if (isRed(h.right.left)) { 
+            h.right = rotateRight(h.right);
+            h = rotateLeft(h);
+            flipColors(h);
         }
+        return h;
+    }
 
-        // if new node is a root node, simply return
-        if (node.parent == null){
-            node.color = 0;
+    // Assuming that h is red and both h.right and h.right.left
+    // are black, make h.right or one of its children red.
+    private Node moveRedRight(Node h) {
+        // assert (h != null);
+        // assert isRed(h) && !isRed(h.right) && !isRed(h.right.left);
+        flipColors(h);
+        if (isRed(h.left.left)) { 
+            h = rotateRight(h);
+            flipColors(h);
+        }
+        return h;
+    }
+
+    // restore red-black tree invariant
+    private Node balance(Node h) {
+        // assert (h != null);
+
+        if (isRed(h.right) && !isRed(h.left))    h = rotateLeft(h);
+        if (isRed(h.left) && isRed(h.left.left)) h = rotateRight(h);
+        if (isRed(h.left) && isRed(h.right))     flipColors(h);
+
+        h.size = size(h.left) + size(h.right) + 1;
+        return h;
+    }
+
+
+  
+
+   /***************************************************************************
+    *  Ordered symbol table methods.
+    ***************************************************************************/
+
+    /**
+     * Returns the smallest key in the symbol table.
+     * @return the smallest key in the symbol table
+     * @throws NoSuchElementException if the symbol table is empty
+     */
+    public Key min() {
+        if (isEmpty()) throw new NoSuchElementException("calls min() with empty symbol table");
+        return min(root).key;
+    } 
+
+    // the smallest key in subtree rooted at x; null if no such key
+    private Node min(Node x) { 
+        // assert x != null;
+        if (x.left == null) return x; 
+        else                return min(x.left); 
+    } 
+
+    /**
+     * Returns the largest key in the symbol table.
+     * @return the largest key in the symbol table
+     * @throws NoSuchElementException if the symbol table is empty
+     */
+    public Key max() {
+        if (isEmpty()) throw new NoSuchElementException("calls max() with empty symbol table");
+        return max(root).key;
+    } 
+
+    // the largest key in the subtree rooted at x; null if no such key
+    private Node max(Node x) { 
+        // assert x != null;
+        if (x.right == null) return x; 
+        else                 return max(x.right); 
+    } 
+
+
+    /**
+     * Returns the largest key in the symbol table less than or equal to {@code key}.
+     * @param key the key
+     * @return the largest key in the symbol table less than or equal to {@code key}
+     * @throws NoSuchElementException if there is no such key
+     * @throws IllegalArgumentException if {@code key} is {@code null}
+     */
+    public Key floor(Key key) {
+        if (key == null) throw new IllegalArgumentException("argument to floor() is null");
+        if (isEmpty()) throw new NoSuchElementException("calls floor() with empty symbol table");
+        Node x = floor(root, key);
+        if (x == null) throw new NoSuchElementException("argument to floor() is too small");
+        else           return x.key;
+    }    
+
+    // the largest key in the subtree rooted at x less than or equal to the given key
+    private Node floor(Node x, Key key) {
+        if (x == null) return null;
+        int cmp = key.compareTo(x.key);
+        if (cmp == 0) return x;
+        if (cmp < 0)  return floor(x.left, key);
+        Node t = floor(x.right, key);
+        if (t != null) return t; 
+        else           return x;
+    }
+
+    /**
+     * Returns the smallest key in the symbol table greater than or equal to {@code key}.
+     * @param key the key
+     * @return the smallest key in the symbol table greater than or equal to {@code key}
+     * @throws NoSuchElementException if there is no such key
+     * @throws IllegalArgumentException if {@code key} is {@code null}
+     */
+    public Key ceiling(Key key) {
+        if (key == null) throw new IllegalArgumentException("argument to ceiling() is null");
+        if (isEmpty()) throw new NoSuchElementException("calls ceiling() with empty symbol table");
+        Node x = ceiling(root, key);
+        if (x == null) throw new NoSuchElementException("argument to ceiling() is too small");
+        else           return x.key;  
+    }
+
+    // the smallest key in the subtree rooted at x greater than or equal to the given key
+    private Node ceiling(Node x, Key key) {  
+        if (x == null) return null;
+        int cmp = key.compareTo(x.key);
+        if (cmp == 0) return x;
+        if (cmp > 0)  return ceiling(x.right, key);
+        Node t = ceiling(x.left, key);
+        if (t != null) return t; 
+        else           return x;
+    }
+
+    /**
+     * Return the key in the symbol table of a given {@code rank}.
+     * This key has the property that there are {@code rank} keys in
+     * the symbol table that are smaller. In other words, this key is the
+     * ({@code rank}+1)st smallest key in the symbol table.
+     *
+     * @param  rank the order statistic
+     * @return the key in the symbol table of given {@code rank}
+     * @throws IllegalArgumentException unless {@code rank} is between 0 and
+     *        <em>n</em>–1
+     */
+    public Key select(int rank) {
+        if (rank < 0 || rank >= size()) {
+            throw new IllegalArgumentException("argument to select() is invalid: " + rank);
+        }
+        return select(root, rank);
+    }
+
+    // Return key in BST rooted at x of given rank.
+    // Precondition: rank is in legal range.
+    private Key select(Node x, int rank) {
+        if (x == null) return null;
+        int leftSize = size(x.left);
+        if      (leftSize > rank) return select(x.left,  rank);
+        else if (leftSize < rank) return select(x.right, rank - leftSize - 1); 
+        else                      return x.key;
+    }
+
+    /**
+     * Return the number of keys in the symbol table strictly less than {@code key}.
+     * @param key the key
+     * @return the number of keys in the symbol table strictly less than {@code key}
+     * @throws IllegalArgumentException if {@code key} is {@code null}
+     */
+    public int rank(Key key) {
+        if (key == null) throw new IllegalArgumentException("argument to rank() is null");
+        return rank(key, root);
+    } 
+
+    // number of keys less than key in the subtree rooted at x
+    private int rank(Key key, Node x) {
+        if (x == null) return 0; 
+        int cmp = key.compareTo(x.key); 
+        if      (cmp < 0) return rank(key, x.left); 
+        else if (cmp > 0) return 1 + size(x.left) + rank(key, x.right); 
+        else              return size(x.left); 
+    } 
+
+    /**
+     * Returns all keys in the symbol table in the given range,
+     * as an {@code Iterable}.
+     *
+     * @param  lo minimum endpoint
+     * @param  hi maximum endpoint
+     * @return all keys in the symbol table between {@code lo} 
+     *    (inclusive) and {@code hi} (inclusive) as an {@code Iterable}
+     * @throws IllegalArgumentException if either {@code lo} or {@code hi}
+     *    is {@code null}
+     */
+   
+
+
+  
+
+    @Override
+    public void add(Key key, Value val) {
+        if (key == null) throw new IllegalArgumentException("first argument to put() is null");
+        if (val == null) {
+            delete(key);
             return;
         }
 
-        // if the grandparent is null, simply return
-        if (node.parent.parent == null) {
-            return;
-        }
+        root = put(root, key, val);
+        root.color = BLACK;
+        // assert check();
+        
+    } 
 
-        // Fix the tree
-        fixInsert(node);
-    }
-
-    public Node getRoot(){
-        return this.root;
-    }
-
-    // delete the node from the tree
-    public void deleteNode(Key data) {
-        deleteNodeHelper(this.root, data);
-    }
-
-    // print the tree structure on the screen
-    public void prettyPrint() {
-        printHelper(this.root, "", true);
-    }
-
-    public boolean contains(Key k){
-        Node fe = searchTree(k);
-        if (fe.equals(TNULL)){
-            return false;
-        }
-        return true;
-    }
-
-    public Value get(Key key){
-        Node fe = searchTree(key);
-
-        return (Value) fe.value;
-    }
 
 }

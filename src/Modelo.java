@@ -8,23 +8,23 @@
  */
 
 import java.util.Scanner;
+import java.util.Map;
 
 public class Modelo {
     Scanner scan;
-    Mapas datos;
+    Mapas<String, String> datos;
     MapFactory mf;
-    Reader rd;
+    String[] oracion = {};
 
     public Modelo() {
         this.scan = new Scanner(System.in);;
         mf = new MapFactory();
-        rd = new Reader();
     }
 
     public void cual(){
        System.out.println("Ingrese que tipo de Map se implementara:");
        System.out.println("1. HashMap");
-       System.out.println("2. Red Black Tree");
+       System.out.println("2. Splay Tree");
 
        int op = scan.nextInt();
 
@@ -33,9 +33,8 @@ public class Modelo {
            res = "HM";
        }
        else if(op ==2){
-           res = "";
-       }
-       else{
+           res = "SPLT";
+       }else{
            res = "";
        }
 
@@ -43,14 +42,27 @@ public class Modelo {
    }
 
    public void datos(){
-
-        rd.dataToTree(datos);
-
-        RedBlackTree pruebas = (RedBlackTree) datos;
-        pruebas.inorder();
        // falta agregar que busque un valor dentro del arbol RBT
         // falta agregar la implementacion de Association
         // Aqui falta agragar los datos al diccionario
        // Falta trducir el documento
+
+
+       /*
+       * En esta seccion se realizara el ingreso de las palabras para la
+       * traduccion del ingles al español. Se hara un llamado a la clase
+       * Reader, el cual se encargara de leer los archivos solicitados
+       * para esta hoja de trabajo.
+       */
+
+        Reader.dataToTree(datos);
+        System.out.println(datos.get("abacuses"));
+
+
+       /**
+        * Se realiza la lectura de la oracion, la cual sera traducida posteriorme
+        */
+
+
    }
 }

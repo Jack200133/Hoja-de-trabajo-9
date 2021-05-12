@@ -14,7 +14,11 @@ public class MapFactory {
             //regresa un Hashing map|
             case "HM" -> new HashMapa();
             //regresa un Red Black TreeMap
-            default -> new RedBlackTree();
+            case "RBT" -> new RedBlackTree();
+            //regresa un Splay Tree
+            case "SPLT" -> new SplayBST();
+            
+            default -> throw new IllegalArgumentException("Unexpected value: " + entry);
 
         };
     }

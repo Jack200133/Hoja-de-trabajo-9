@@ -38,7 +38,7 @@ public class RedBlackTree<Key extends  Comparable<Key>,Value> implements Mapas<K
     private void inOrderHelper(Node node) {
         if (node != TNULL) {
             inOrderHelper(node.left);
-            System.out.print("<"+node.data + " "+node.value+">");
+            System.out.print(node.data + " ");
             inOrderHelper(node.right);
         }
     }

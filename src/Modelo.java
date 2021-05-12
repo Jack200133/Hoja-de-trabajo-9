@@ -57,7 +57,7 @@ public class Modelo {
        */
 
        Reader.dataToTree(datos);
-       System.out.println(datos.get("abandoned"));
+       System.out.println(datos.get("abandoned")); //Debuggeando si funciona el ingresod de las palabras.
 
 
    }

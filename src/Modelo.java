@@ -8,16 +8,17 @@
  */
 
 import java.util.Scanner;
-import java.util.Map;
 
 public class Modelo {
     Scanner scan;
     Mapas datos;
     MapFactory mf;
+    Reader rd;
 
     public Modelo() {
         this.scan = new Scanner(System.in);;
         mf = new MapFactory();
+        rd = new Reader();
     }
 
     public void cual(){
@@ -42,6 +43,11 @@ public class Modelo {
    }
 
    public void datos(){
+
+        rd.dataToTree(datos);
+
+        RedBlackTree pruebas = (RedBlackTree) datos;
+        pruebas.inorder();
        // falta agregar que busque un valor dentro del arbol RBT
         // falta agregar la implementacion de Association
         // Aqui falta agragar los datos al diccionario

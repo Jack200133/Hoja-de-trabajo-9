@@ -9,6 +9,8 @@
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.Arrays;
+import java.util.Locale;
 import java.util.Scanner;
 
 
@@ -17,13 +19,12 @@ public class Reader {
     Scanner scanner = new Scanner(System.in);
 
     
-    /** 
-     * @param size
+    /**
      * @param tree
      * Pre: Ingresa la informacion deseada al Binary Search Tree.
      * Post: La informacion ya esta almacenada en el arbol por medio de nodos.
      */
-    public static int dataToTree(int size, Mapas tree){ //Ingresa la informacion deseada al Binary Search Tree.
+    public void dataToTree(Mapas tree){ //Ingresa la informacion deseada al Binary Search Tree.
         try {
             File file = new File("spanish.txt");
             Scanner reader = new Scanner(file);
@@ -31,40 +32,49 @@ public class Reader {
             while (reader.hasNextLine()) {
                 c++;
                 String dictionary = reader.nextLine();
-                String[]  words = dictionary.split(","); 
-                Association<String, String> translate = new Association<String,String>(c, words);
-                tree.insert(c, translate);
+                String[]  words = dictionary.split("\\s+");
+                String[] wordo = words[1].split("\\[");
+                ComparableAssociation translate = new ComparableAssociation(words[0], words[1]);
+                if(!tree.contains(translate)){
+                    tree.add(translate,wordo[0]);
+                }
+
             }
-            size = c;
             reader.close();
         } catch (FileNotFoundException e) {
             System.out.println("Archivo no encontrado.");
             e.printStackTrace();
         }
 
-        return size;
     }
 
     
     /** 
-     * @param sentence
-     * @return String[]
+     * @param map
      * Pre: Lee la oracion desde el archivo de texto.
      * Post: Almacena cada palabra de la oracion en un array. 
      */
-    public static String[] sentenceReader(String[] sentence){
+    public void sentenceReader(Mapas map){
         try {
-            File file = new File("texto.txt");
-            Scanner reader = new Scanner(file);
-            String expression = reader.nextLine();
-            expression = expression.replace(".", "");
-            sentence = expression.split(" ");
-            reader.close();
-        } catch (FileNotFoundException e) {
-            System.out.println("Archivo no encontrado.");
+            File myObj = new File("texto.txt");
+            Scanner myReader = new Scanner(myObj);
+            while (myReader.hasNextLine()) {
+                String data = myReader.nextLine();
+                String[] temp = data.split("\\.");
+                StringBuilder res = new StringBuilder();
+                for (String s : temp) {
+                   String[] oracion = s.split(" ");
+                   for(String i: oracion){
+                       ComparableAssociation top = new ComparableAssociation(i.toLowerCase());
+                   }
+                }
+            }
+            myReader.close();
+        }catch (Exception e) {
+            System.out.println("Archivo no encontrado");
             e.printStackTrace();
         }
-
-        return sentence;
     }
+
+
 }

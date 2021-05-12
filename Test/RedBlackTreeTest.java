@@ -18,6 +18,7 @@ class RedBlackTreeTest {
         RedBlackTree rbt = new RedBlackTree();
         rbt.add("primero",1);
         rbt.add("segun",2);
+
         rbt.add("tercer",3);
         rbt.add("cuarto",4);
         System.out.println(rbt.contains("primero"));

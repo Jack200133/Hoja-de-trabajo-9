@@ -157,9 +157,7 @@ public class Association<K,V> implements MapEntry<K,V>
      */
     public String toString()
     {
-        StringBuffer s = new StringBuffer();
-        s.append("<Association: "+getKey()+"="+getValue()+">");
-        return s.toString();
+        return "<ASS: " + getKey() + "=" + getValue() + ">";
     }
     /*
 ...

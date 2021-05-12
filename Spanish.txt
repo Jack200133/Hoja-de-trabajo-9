@@ -4969,7 +4969,6 @@ onion	cebolla
 onion	la cebolla
 onions	cebollas
 only	solamente
-open	             
 open	abierto
 open	abrir
 open	open

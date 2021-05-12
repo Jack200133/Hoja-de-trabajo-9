@@ -9,8 +9,6 @@
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.Arrays;
-import java.util.Locale;
 import java.util.Scanner;
 
 
@@ -24,7 +22,7 @@ public class Reader {
      * Pre: Ingresa la informacion deseada al Binary Search Tree.
      * Post: La informacion ya esta almacenada en el arbol por medio de nodos.
      */
-    public static void dataToTree(Mapas tree){ //Ingresa la informacion deseada al Binary Search Tree.
+    public void dataToTree(Mapas tree){ //Ingresa la informacion deseada al Binary Search Tree.
         try {
             File file = new File("Spanish.txt");
             Scanner reader = new Scanner(file);
@@ -32,8 +30,9 @@ public class Reader {
             while (reader.hasNextLine()) {
                 c++;
                 String dictionary = reader.nextLine();
-                String[]  words = dictionary.split("	"); 
-                tree.add(words[0], words[1]);
+                String[]  words = dictionary.split("	");
+                String[] words2 = words[1].split(",");
+                tree.add(words[0], words2[0]);
             }
 
             reader.close();
@@ -45,27 +44,35 @@ public class Reader {
     }
 
     
-    /** 
-     * @param map
+    /**
      * Pre: Lee la oracion desde el archivo de texto.
      * Post: Almacena cada palabra de la oracion en un array. 
      */
-    public void sentenceReader(StringBuilder string){
+    public void sentenceReader(Mapas map){
+        StringBuilder res = new StringBuilder();
         try {
+            
             File myObj = new File("texto.txt");
             Scanner myReader = new Scanner(myObj);
             while (myReader.hasNextLine()) {
                 String data = myReader.nextLine();
                 String[] temp = data.split("\\.");
-                string = new StringBuilder();
+                res = new StringBuilder();
                 for (String s : temp) {
                    String[] oracion = s.split(" ");
                    for(String i: oracion){
-                       ComparableAssociation top = new ComparableAssociation(i.toLowerCase());
+                       if(map.contains(i.toLowerCase())){
+                           res.append(" ");
+                           res.append(map.get(i));
+                           res.append(" ");
+                       } else{
+                           res.append(" ").append("*").append(i).append("*").append(" ");
+                       }
                    }
                 }
             }
             myReader.close();
+            System.out.println(res.toString());
         }catch (Exception e) {
             System.out.println("Archivo no encontrado");
             e.printStackTrace();

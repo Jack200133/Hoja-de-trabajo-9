@@ -18,11 +18,11 @@ class RedBlackTreeTest {
         RedBlackTree rbt = new RedBlackTree();
         rbt.add("primero",1);
         rbt.add("segun",2);
-
         rbt.add("tercer",3);
         rbt.add("cuarto",4);
-        System.out.println(rbt.contains("primero"));
-        //assert (rbt.contains("primero"));
+        rbt.add("quinto",5);
+        rbt.add("seis",6);
+        assert (rbt.contains("primero"));
 
     }
 
@@ -33,6 +33,8 @@ class RedBlackTreeTest {
         rbt.add("segun",2);
         rbt.add("tercer",3);
         rbt.add("cuarto",4);
+        rbt.add("quinto",5);
+        rbt.add("seis",6);
         assert (rbt.get("primero").equals(1));
 
     }

@@ -8,13 +8,11 @@
  */
 
 import java.util.Scanner;
-import java.util.Map;
 
 public class Modelo {
     Scanner scan;
     Mapas<String, String> datos;
     MapFactory mf;
-    String[] oracion = {};
 
     public Modelo() {
         this.scan = new Scanner(System.in);;
@@ -45,6 +43,7 @@ public class Modelo {
    }
 
    public void datos(){
+        Reader rd = new Reader();
        // falta agregar que busque un valor dentro del arbol RBT
         // falta agregar la implementacion de Association
         // Aqui falta agragar los datos al diccionario
@@ -58,8 +57,9 @@ public class Modelo {
        * para esta hoja de trabajo.
        */
 
-        Reader.dataToTree(datos);
+        rd.dataToTree(datos);
         System.out.println(datos.get("abacuses"));
+        rd.sentenceReader(datos);
 
 
        /**

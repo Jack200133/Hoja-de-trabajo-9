@@ -14,10 +14,12 @@ public class Modelo {
     Scanner scan;
     Mapas datos;
     MapFactory mf;
+    String[] oracion;
 
     public Modelo() {
         this.scan = new Scanner(System.in);;
         mf = new MapFactory();
+        oracion = { };
     }
 
     public void cual(){
@@ -46,5 +48,18 @@ public class Modelo {
         // falta agregar la implementacion de Association
         // Aqui falta agragar los datos al diccionario
        // Falta trducir el documento
+
+
+       /*
+       * En esta seccion se realizara el ingreso de las palabras para la
+       * traduccion del ingles al español. Se hara un llamado a la clase
+       * Reader, el cual se encargara de leer los archivos solicitados
+       * para esta hoja de trabajo.
+       */
+
+       Reader.datoToTree(datos);
+       System.out.println(datos.get("aback"));
+
+
    }
 }

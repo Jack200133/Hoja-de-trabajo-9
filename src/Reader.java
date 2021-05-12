@@ -23,7 +23,7 @@ public class Reader {
      * Pre: Ingresa la informacion deseada al Binary Search Tree.
      * Post: La informacion ya esta almacenada en el arbol por medio de nodos.
      */
-    public static int dataToTree(Mapas tree){ //Ingresa la informacion deseada al Binary Search Tree.
+    public static void dataToTree(Mapas tree){ //Ingresa la informacion deseada al Binary Search Tree.
         try {
             File file = new File("Spanish.txt");
             Scanner reader = new Scanner(file);
@@ -31,7 +31,7 @@ public class Reader {
             while (reader.hasNextLine()) {
 
                 String dictionary = reader.nextLine();
-                String[]  words = dictionary.split("\t");
+                String[]  words = dictionary.split("	");
                 tree.add(words[0], words[1]);
             }
 
@@ -40,8 +40,6 @@ public class Reader {
             System.out.println("Archivo no encontrado.");
             e.printStackTrace();
         }
-
-        return size;
     }
 
     

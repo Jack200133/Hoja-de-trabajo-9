@@ -12,14 +12,13 @@ import java.util.Map;
 
 public class Modelo {
     Scanner scan;
-    Mapas datos;
+    Mapas<String, String> datos;
     MapFactory mf;
-    String[] oracion;
+    String[] oracion = {};
 
     public Modelo() {
         this.scan = new Scanner(System.in);;
         mf = new MapFactory();
-        oracion = { };
     }
 
     public void cual(){
@@ -57,8 +56,8 @@ public class Modelo {
        * para esta hoja de trabajo.
        */
 
-       Reader.datoToTree(datos);
-       System.out.println(datos.get("aback"));
+       Reader.dataToTree(datos);
+       System.out.println(datos.get("abandoned"));
 
 
    }

@@ -43,10 +43,6 @@ import java.util.NoSuchElementException;
  *  the number of keys returned by the iterator.
  *  Construction takes &Theta;(1) time.
  *  <p>
- *  For alternative implementations of the symbol table API, see {@link ST},
- *  {@link BinarySearchST}, {@link SequentialSearchST}, {@link BST},
- *  {@link SeparateChainingHashST}, {@link LinearProbingHashST}, and
- *  {@link AVLTreeST}.
  *  For additional documentation, see
  *  <a href="https://algs4.cs.princeton.edu/33balanced">Section 3.3</a> of
  *  <i>Algorithms, 4th Edition</i> by Robert Sedgewick and Kevin Wayne.
@@ -395,14 +391,6 @@ public class RedBlackTree<Key extends Comparable<Key>, Value> implements Mapas<K
         h.size = size(h.left) + size(h.right) + 1;
         return h;
     }
-
-
-  
-
-   /***************************************************************************
-    *  Ordered symbol table methods.
-    ***************************************************************************/
-
     /**
      * Returns the smallest key in the symbol table.
      * @return the smallest key in the symbol table
@@ -537,22 +525,6 @@ public class RedBlackTree<Key extends Comparable<Key>, Value> implements Mapas<K
         else if (cmp > 0) return 1 + size(x.left) + rank(key, x.right); 
         else              return size(x.left); 
     } 
-
-    /**
-     * Returns all keys in the symbol table in the given range,
-     * as an {@code Iterable}.
-     *
-     * @param  lo minimum endpoint
-     * @param  hi maximum endpoint
-     * @return all keys in the symbol table between {@code lo} 
-     *    (inclusive) and {@code hi} (inclusive) as an {@code Iterable}
-     * @throws IllegalArgumentException if either {@code lo} or {@code hi}
-     *    is {@code null}
-     */
-   
-
-
-  
 
     @Override
     public void add(Key key, Value val) {
